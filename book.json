@@ -1,8 +1,65 @@
-"plugins": [
-    "disqus"
-],
-"pluginsConfig": {
-    "disqus": {
-        "shortName": "gitbookuse"
+{
+    "title": "年子: Mali GPU 驱动详解",
+    "author": "Zhuoran JI",
+    "description": "select * from learn",
+    "language": "zh-hans",
+    "gitbook": "3.2.3",
+    "styles": {
+        "website": "./styles/website.css"
+    },
+    "structure": {
+        "readme": "README.md"
+    },
+    "plugins": [
+        "-sharing",
+        "splitter",
+        "expandable-chapters-small",
+        "anchors",
+        "github",
+        "github-buttons",
+        "sharing-plus",
+        "anchor-navigation-ex",
+        "comment"
+    ],
+    "pluginsConfig": {
+        "github": {
+            "url": "https://github.com/jizhuoran"
+        },
+        "github-buttons": {
+            "buttons": [{
+                "user": "jizhuoran",
+                "repo": "Mali-GPU-Docs",
+                "type": "star",
+                "size": "large",
+                "count": true
+                }
+            ]
+        },
+        "sharing": {
+            "douban": false,
+            "facebook": false,
+            "google": false,
+            "hatenaBookmark": false,
+            "instapaper": false,
+            "line": false,
+            "linkedin": false,
+            "messenger": false,
+            "pocket": false,
+            "qq": false,
+            "qzone": false,
+            "stumbleupon": false,
+            "twitter": false,
+            "viber": false,
+            "vk": false,
+            "weibo": false,
+            "whatsapp": false,
+            "all": [
+                "google", "facebook", "weibo", "twitter",
+                "qq", "qzone", "linkedin", "pocket"
+            ]
+        },
+        "anchor-navigation-ex": {
+            "showLevel": false
+        }
     }
 }

@@ -1,0 +1,323 @@
+
+<!DOCTYPE HTML>
+<html lang="zh-hans" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>设备注册: GPU Register · 年子: Mali GPU 驱动详解</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="内核自举模块载，显卡注册驱动生 （王子旭，2019）">
+        <meta name="generator" content="GitBook 3.2.3">
+        <meta name="author" content="Zhuoran JI">
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-splitter/splitter.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-expandable-chapters-small/expandable-chapters-small.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-anchors/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-anchor-navigation-ex/style/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-comment/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+
+        
+    
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="dai-ma-shi-zen-me-dao-gpu-de.html" />
+    
+    
+    <link rel="prev" href="../" />
+    
+
+    <style>
+    @media only screen and (max-width: 640px) {
+        .book-header .hidden-mobile {
+            display: none;
+        }
+    }
+    </style>
+    <script>
+        window["gitbook-plugin-github-buttons"] = {"buttons":[{"user":"jizhuoran","repo":"Mali-GPU-Docs","type":"star","size":"large","count":true}]};
+    </script>
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="输入并搜索" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    前言
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.2" data-path="she-bei-zhu-ce-gpu-register.html">
+            
+                <a href="she-bei-zhu-ce-gpu-register.html">
+            
+                    
+                    设备注册: GPU Register
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="dai-ma-shi-zen-me-dao-gpu-de.html">
+            
+                <a href="dai-ma-shi-zen-me-dao-gpu-de.html">
+            
+                    
+                    代码是怎么到GPU的
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            本书使用 GitBook 发布
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >设备注册: GPU Register</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <div id="anchor-navigation-ex-navbar"><i class="fa fa-navicon"></i><ul><li><span class="title-icon "></span><a href="#&#x8BBE;&#x5907;&#x6CE8;&#x518C;-gpu-register"><b></b>&#x8BBE;&#x5907;&#x6CE8;&#x518C;: GPU Register</a></li><ul><ul><li><span class="title-icon "></span><a href="#kbasebackendearlyinit"><b></b>kbase_backend_early_init</a></li><li><span class="title-icon "></span><a href="#kbasedeviceinit"><b></b>kbase_device_init</a></li><li><span class="title-icon "></span><a href="#kbasectxschedinit"><b></b>kbase_ctx_sched_init</a></li><li><span class="title-icon "></span><a href="#kbasememinit--kbasedevicecoherencyinit"><b></b>kbase_mem_init &amp; kbase_device_coherency_init</a></li><li><span class="title-icon "></span><a href="#kbasebackendlateinit"><b></b>kbase_backend_late_init</a></li><li><span class="title-icon "></span><a href="#miscregister"><b></b>misc_register</a></li></ul></ul></ul></div><a href="#&#x8BBE;&#x5907;&#x6CE8;&#x518C;-gpu-register" id="anchorNavigationExGoTop"><i class="fa fa-arrow-up"></i></a><h1 id="&#x8BBE;&#x5907;&#x6CE8;&#x518C;-gpu-register"><a name="&#x8BBE;&#x5907;&#x6CE8;&#x518C;-gpu-register" class="anchor-navigation-ex-anchor" href="#&#x8BBE;&#x5907;&#x6CE8;&#x518C;-gpu-register"><i class="fa fa-link" aria-hidden="true"></i></a><a name="&#x8BBE;&#x5907;&#x6CE8;&#x518C;-gpu-register" class="plugin-anchor" href="#&#x8BBE;&#x5907;&#x6CE8;&#x518C;-gpu-register"><i class="fa fa-link" aria-hidden="true"></i></a>&#x8BBE;&#x5907;&#x6CE8;&#x518C;: GPU Register</h1>
+<p>&#x5F88;&#x660E;&#x663E;&#xFF0C;&#x73B0;&#x5728;&#x4F60;&#x6709;&#x4E00;&#x4E2A;GPU&#xFF0C;&#x4F60;&#x89C9;&#x5F97;&#x81EA;&#x5DF1;&#x53EF;&#x5389;&#x5BB3;&#xFF0C;&#x6709;&#x4E00;&#x4E2A;&#x80FD;&#x7B97;&#x7684;&#x8FD9;&#x4E48;&#x5FEB;&#x7684;&#x73A9;&#x610F;&#x513F;&#xFF0C;&#x4F46;&#x662F;&#x4F60;&#x5F97;&#x8BA9;&#x4F60;&#x7684;&#x64CD;&#x4F5C;&#x7CFB;&#x7EDF;&#x4E5F;&#x77E5;&#x9053;&#x4F60;&#x6709;&#x8FD9;&#x4E48;&#x4E2A;&#x73A9;&#x610F;&#x513F;&#xFF0C;&#x4E4B;&#x540E;&#x4F60;&#x624D;&#x80FD;&#x901A;&#x8FC7;&#x64CD;&#x4F5C;&#x7CFB;&#x7EDF;&#x6765;&#x7ED9;GPU&#x63D0;&#x4EA4;&#x4EFB;&#x52A1;&#x3002;</p>
+<p>&#x7531;&#x4E8E;Linux&#x91C7;&#x53D6;&#x4E86;&#x6A21;&#x5757;&#x5316;&#x7684;&#x8BBE;&#x8BA1;&#xFF0C;&#x6240;&#x4EE5;device driver&#x53EF;&#x4EE5;&#x5199;&#x6210;&#x4E00;&#x4E2A;module&#xFF0C;&#x7136;&#x540E;&#x6211;&#x4EEC;&#x53EA;&#x8981;&#x628A;&#x8FD9;&#x4E2A;&#x6A21;&#x5757;&#x6CE8;&#x518C;&#x5230;Linux Kernel&#x91CC;&#xFF0C;&#x4ED6;&#x5C31;&#x6210;&#x4E86;&#x64CD;&#x4F5C;&#x7CFB;&#x7EDF;&#x7684;&#x4E00;&#x90E8;&#x5206;&#x3002;&#x6240;&#x4EE5;&#x76D8;&#x53E4;&#x5F00;&#x5929;&#x8F9F;&#x5730;&#x4E4B;&#x64CD;&#x4F5C;&#x5C31;&#x662F;&#x8C03;&#x7528;<a href="https://www.kernel.org/doc/htmldocs/kernel-hacking/routines-init-again.html" target="_blank"><strong>module_init</strong></a>&#x51FD;&#x6570;&#x628A;driver&#x521D;&#x59CB;&#x5316;&#x51FD;&#x6570;&#x6CE8;&#x518C;&#x5230;&#x7CFB;&#x7EDF;&#x91CC;&#x3002;&#x5982;&#x679C;&#x4F60;&#x8DDF;&#x6211;&#x4E00;&#x6837;&#x4E0D;&#x592A;&#x7406;&#x89E3;module_init&#x662F;&#x5982;&#x4F55;&#x8FD0;&#x4F5C;&#x7684;&#xFF0C;&#x4E0D;&#x5982;&#x770B;&#x770B;&#x8FD9;&#x7BC7;<a href="https://blog.csdn.net/u013216061/article/details/72511653" target="_blank"><strong>blog</strong></a>&#x3002;</p>
+<p>&#x5728;&#x4EE3;&#x7801;&#x91CC;&#xFF0C;&#x4F20;&#x8FDB;module_init&#x91CC;&#x7684;&#x90A3;&#x4E2A;&#x51FD;&#x6570;&#x5C31;&#x5E72;&#x4E86;&#x4E00;&#x4EF6;&#x6B63;&#x4E8B;&#x513F;&#xFF0C;&#x5C31;&#x662F;&#x8C03;&#x7528;&#x4E00;&#x4E2A;&#x53EB;<strong>platform_driver_register</strong>&#x7684;&#x51FD;&#x6570;&#x3002;&#x7531;&#x4E8E;GPU&#x662F;&#x4F60;&#x5148;&#x63D2;&#x5728;&#x673A;&#x5668;&#x4E0A;&#x7684;&#xFF08;&#x5176;&#x5B9E;&#x6211;&#x4E0D;&#x77E5;&#x9053;&#x5BF9;&#x4E8E;Mali&#x8FD9;&#x79CD;&#x79FB;&#x52A8;GPU&#xFF0C;&#x4F60;&#x5F3A;&#x884C;&#x4ECE;&#x82AF;&#x7247;&#x4E0A;&#x628A;GPU&#x6263;&#x4E0B;&#x6765;&#xFF0C;&#x6574;&#x4E2A;&#x8BBE;&#x5907;&#x8FD8;&#x80FD;&#x4E0D;&#x80FD;&#x7528;&#xFF09;&#xFF0C;&#x5F53;&#x4F60;&#x8C03;&#x7528;<strong>platform_driver_register(platform_driver)</strong>&#x4E4B;&#x540E;&#xFF0C;&#x5728;&#x5B89;&#x88C5;&#x9A71;&#x52A8;&#x7A0B;&#x5E8F;&#x8FC7;&#x7A0B;&#x4E2D;&#x4ECE;&#x603B;&#x7EBF;&#x4E0A;&#x904D;&#x5386;&#x5404;&#x4E2A;&#x8BBE;&#x5907;&#xFF0C;&#x901A;&#x8FC7;&quot;platform_driver.driver.name&quot;&#x770B;&#x9A71;&#x52A8;&#x7A0B;&#x5E8F;&#x662F;&#x5426;&#x4E0E;&#x5176;&#x76F8;&#x5339;&#x914D;&#xFF0C;&#x5982;&#x679C;&#x5339;&#x914D;&#x5C31;&#x8C03;&#x7528;&quot;platform_driver.probe&quot;&#x3002;</p>
+<p>&#x5982;&#x679C;&#x4E00;&#x5207;&#x987A;&#x5229;&#xFF0C;&#x5230;&#x4E86;&#x8FD9;&#x4E00;&#x6B65;&#xFF0C;&#x7CFB;&#x7EDF;&#x5DF2;&#x7ECF;&#x627E;&#x5230;&#x4E86;&#x4F60;&#x7684;GPU&#xFF0C;&#x5E76;&#x628A;GPU&#x5BF9;&#x5E94;&#x7684;<strong>platform_device</strong>&#x4F20;&#x7ED9;&quot;platform_driver.probe&quot;&#x3002;&#x5728;Mali driver&#x91CC;&#xFF0C;&#x8FD9;&#x4E2A;&#x53EB;kbase_platform_device_probe&#x7684;probe&#x51FD;&#x6570;&#x5E72;&#x4E86;&#x8001;&#x9F3B;&#x5B50;&#x4E8B;&#x513F;&#x4E86;&#xFF0C;&#x5B83;&#x51ED;&#x4E00;&#x5DF1;&#x4E4B;&#x529B;&#x5B8C;&#x6210;&#x4E86;&#x6574;&#x4E2A;&#x6CE8;&#x518C;&#x8FC7;&#x7A0B;&#x3002;&#x5F53;&#x7136;&#x8FD9;&#x4E2A;&#x6CE8;&#x518C;&#x8FC7;&#x7A0B;&#x65E0;&#x5916;&#x4E4E;&#x5C31;&#x4E24;&#x4E2A;&#x65B9;&#x9762;&#xFF1A;&#x4E00;&#x662F;&#x5904;&#x7406;&#x786C;&#x4EF6;&#x65B9;&#x9762;&#x7684;&#x7684;&#x6CE8;&#x518C;&#x4E8B;&#x5B9C;&#xFF0C;&#x53E6;&#x4E00;&#x4E2A;&#x662F;&#x521B;&#x5EFA;&#x4E00;&#x4E9B;class&#xFF08;&#x5176;&#x5B9E;&#x8FD9;&#x91CC;&#x662F;structure&#xFF0C;&#x4F46;&#x8BF4;&#x7740;&#x65B9;&#x4FBF;&#x5427;&#xFF0C;&#x5927;&#x5BB6;&#x90FD;&#x662F;&#x6210;&#x5E74;&#x4EBA;&#x4E86;&#xFF0C;&#x90FD;&#x61C2;&#xFF09;&#x7684;instance&#xFF0C;&#x8FD9;&#x5C31;&#x662F;Mali GPU &#x91CC;&#x9762;&#x7684;kbase&#xFF08;kernel side base API&#xFF09;&#x4E86;&#xFF0C;&#x8FD9;&#x4E9B;API&#x63D0;&#x4F9B;&#x4E86;&#x5BF9;GPU&#x7684;&#x62BD;&#x8C61;&#xFF0C;&#x65E0;&#x8BBA;&#x662F;&#x5BF9;GPU&#x7684;&#x63A7;&#x5236;&#x8FD8;&#x662F;&#x72B6;&#x6001;&#x8BB0;&#x5F55;&#x90FD;&#x662F;&#x901A;&#x8FC7;kbase API&#x8FDB;&#x884C;&#x7684;&#x3002;</p>
+<p>&#x5728;&#x786C;&#x4EF6;&#x5C42;&#x9762;&#x4E0A;&#xFF0C;&#x603B;&#x5171;&#x5E72;&#x4E86;&#x4E09;&#x4EF6;&#x5927;&#x4E8B;&#x513F;&#xFF0C;&#x4E00;&#x662F;&#x5206;&#x914D;&#x4E86;irqs&#xFF0C;&#x4E8C;&#x662F;&#x6CE8;&#x518C;&#x4E86;map&#xFF0C;&#x4E09;&#x662F;&#x521D;&#x59CB;&#x5316;&#x4E86;&#x7535;&#x6E90;&#x63A7;&#x5236;&#xFF0C;&#x8981;&#x662F;&#x8BF4;&#x8FD8;&#x6709;&#x4E00;&#x4EF6;&#xFF0C;&#x90A3;&#x5C31;&#x662F;&#x6CE8;&#x518C;&#x4E86;io history&#x3002;&#x8FD9;&#x4E00;&#x90E8;&#x5206;&#x56FA;&#x7136;&#x91CD;&#x8981;&#xFF0C;&#x4E0D;&#x7136;&#x7A7A;&#x6709;&#x9A71;&#x52A8;&#x800C;&#x65E0;&#x8BBE;&#x5907;&#xFF0C;&#x5219;&#x653F;&#x4EE4;&#x4E0D;&#x8FBE;&#x3002;&#x7136;&#x800C;&#x5BF9;&#x7406;&#x89E3;GPU &#x9A71;&#x52A8;&#x91CC;&#x9762;&#x7684;police&#x5E76;&#x6CA1;&#x6709;&#x5565;&#x5E2E;&#x52A9;&#xFF0C;&#x6240;&#x4EE5;&#x6211;&#x4E0D;&#x51C6;&#x5907;&#x8BE6;&#x7EC6;&#x5C55;&#x5F00;&#x8FD9;&#x4E00;&#x90E8;&#x5206;&#xFF0C;&#x800C;&#x662F;&#x628A;&#x7B14;&#x58A8;&#x7528;&#x5728;&#x53E6;&#x4E00;&#x4E2A;&#x90E8;&#x5206;&#x3002;&#x5F53;&#x7136;&#xFF0C;&#x8FD9;&#x53EA;&#x662F;&#x6211;&#x73B0;&#x5728;&#x7684;&#x8BA4;&#x8BC6;&#xFF0C;&#x4E5F;&#x6709;&#x53EF;&#x80FD;&#x8FD9;&#x90E8;&#x5206;&#x6709;&#x7528;&#x5904;&#xFF0C;&#x90A3;&#x4E48;&#x6211;&#x5C31;&#x56DE;&#x6765;&#x518D;&#x5199;&#xFF0C;&#x8FD9;&#x5C31;&#x662F;&#x7535;&#x5B50;&#x7F16;&#x8F91;&#x7684;&#x597D;&#x5904;&#x3002;</p>
+<p>&#x90A3;&#x4E48;&#x5728;kbase&#x4E0A;&#xFF0C;&#x4FBF;&#x662F;&#x53CA;&#x5176;&#x590D;&#x6742;&#x7684;&#x4E86;&#x3002;</p>
+<h3 id="kbasebackendearlyinit"><a name="kbasebackendearlyinit" class="anchor-navigation-ex-anchor" href="#kbasebackendearlyinit"><i class="fa fa-link" aria-hidden="true"></i></a><a name="kbasebackendearlyinit" class="plugin-anchor" href="#kbasebackendearlyinit"><i class="fa fa-link" aria-hidden="true"></i></a>kbase_backend_early_init</h3>
+<p>&#x5728;&#x8FD9;&#x4E2A;&#x660E;&#x663E;&#x662F;&#x50CF;&#x6211;&#x8FD9;&#x79CD;&#x94A2;&#x94C1;&#x76F4;&#x7537;&#x624D;&#x4F1A;&#x8D77;&#x8FD9;&#x79CD;&#x540D;&#x7684;&#x51FD;&#x6570;&#x91CC;&#xFF0C;&#x9996;&#x5148;&#x8C03;&#x7528;&#x4E86;&#x4E00;&#x4E2A;&#x5E73;&#x53F0;&#x76F8;&#x5173;&#x7684;&#x51FD;&#x6570;&#xFF08;kbasep_platform_device_init&#xFF09;&#x53BB;&#x521D;&#x59CB;&#x5316;&#x786C;&#x4EF6;&#xFF0C;&#x4F46;&#x662F;&#x770B;&#x4E86;&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x7684;&#x51FD;&#x6570;&#x4F53;&#xFF0C;&#x91CC;&#x9762;&#x662F;&#x4E2A;NULL&#x3002;&#x3002;&#x3002;&#x63A5;&#x7740;&#x4ED6;&#x53C8;&#x8C03;&#x7528;&#x4E86;&#xFF08;kbase_pm_runtime_init&#xFF09;&#xFF0C;&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x5176;&#x5B9E;&#x5C31;&#x662F;&#x8BBE;&#x7F6E;callback&#x7684;&#xFF0C;&#x628A;&#x5173;&#x4E8E;&#x7535;&#x6E90;&#x7BA1;&#x7406;&#x7684;callback&#x90FD;&#x6CE8;&#x518C;&#x5230;kbdev-&gt;pm.backend&#x4E0A;&#x53BB;&#x3002;&#x5B8C;&#x6210;&#x4E86;&#x7535;&#x6E90;&#x7684;callback&#x6CE8;&#x518C;&#x4E4B;&#x540E;&#xFF0C;early_init&#x901A;&#x8FC7;&#x4E00;&#x4E2A;&#x53EB;&#xFF08;kbase_pm_register_access_enable&#xFF09;&#x7684;&#x51FD;&#x6570;&#x5F00;&#x542F;&#x4E86;GPU&#x5BC4;&#x5B58;&#x5668;&#x7684;&#x8BBF;&#x95EE;&#xFF0C;&#x522B;&#x770B;&#x4ED6;&#x8BF4;&#x7684;&#x8FD9;&#x4E48;&#x9AD8;&#x5927;&#x4E0A;&#xFF0C;&#x4ED6;&#x5C31;&#x662F;&#x7ED9;GPU&#x901A;&#x4E86;&#x4E2A;&#x7535;&#xFF0C;&#x8FD9;&#x6837;&#x6211;&#x4EEC;&#x624D;&#x80FD;&#x4ECE;&#x5BC4;&#x5B58;&#x5668;&#x91CC;&#x8BFB;&#x53D6;&#x5230;&#x4FE1;&#x606F;&#x3002;&#x653E;&#x4E0B;&#x8FD9;&#x4E2A;&#x4E0D;&#x8868;&#xFF0C;&#x63A5;&#x4E0B;&#x6765;early_init&#x51FD;&#x6570;&#x5C31;&#x628A;&#x4ECE;GPU&#x5BC4;&#x5B58;&#x5668;&#x8BFB;&#x53D6;&#x51FA;&#x6765;&#x7684;&#x4FE1;&#x606F;&#x5B58;&#x5230;&#x4E86;kbdev-&gt;gpu_props&#x91CC;&#x4E86;&#xFF08;<strong>kbase_gpu_props</strong>&#x7684;instance&#xFF09;&#x3002;&#x65E2;&#x7136;&#x8BFB;&#x53D6;&#x5B8C;&#x4E86;&#x4FE1;&#x606F;&#xFF0C;early_init&#x51FD;&#x6570;&#x5C31;&#x628A;&#x7535;&#x5173;&#x4E86;&#xFF0C;&#x5F53;&#x7136;&#x6211;&#x76F8;&#x4FE1;&#x8FD9;&#x4E0D;&#x662F;&#x4E3A;&#x4E86;&#x7701;&#x7535;&#xFF0C;&#x80AF;&#x5B9A;&#x662F;&#x8981;&#x65AD;&#x7535;&#x7136;&#x540E;&#x8FDB;&#x884C;&#x4E00;&#x4E9B;&#x540E;&#x7EED;&#x64CD;&#x4F5C;&#xFF0C;&#x5E76;&#x4E14;&#x8FD9;&#x4E9B;&#x64CD;&#x4F5C;&#x662F;&#x4E0D;&#x80FD;&#x5728;GPU&#x901A;&#x7535;&#x7684;&#x65F6;&#x5019;&#x5E72;&#x7684;&#x3002;&#x6700;&#x540E;&#xFF0C;early_init&#x5148;&#x662F;&#x6CE8;&#x518C;&#x4E86;interrupts&#xFF0C;&#x7D27;&#x63A5;&#x7740;&#x521D;&#x59CB;&#x5316;&#x4E86;&#x7535;&#x6E90;&#x7BA1;&#x7406;&#x6846;&#x67B6;&#xFF08;hwaccess_pm&#xFF09;&#x3002;</p>
+<p>&#x53EF;&#x4EE5;&#x770B;&#x51FA;&#x6765;&#xFF0C;&#x65E2;&#x7136;&#x53EB;&#x505A;early_init&#xFF0C;&#x90A3;&#x4E48;&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x4E3B;&#x8981;&#x8FD8;&#x662F;&#x521D;&#x59CB;&#x5316;&#x4E86;&#x7535;&#x6E90;&#x76F8;&#x5173;&#x7684;&#x4E1C;&#x897F;&#xFF0C;&#x5E76;&#x4E14;&#x628A;GPU&#x7684;&#x57FA;&#x672C;&#x4FE1;&#x606F;&#x4ECE;&#x5BC4;&#x5B58;&#x5668;&#x91CC;&#x8BFB;&#x4E86;&#x51FA;&#x6765;&#xFF0C;&#x987A;&#x624B;&#x8BBE;&#x7F6E;&#x4E86;&#x4E2D;&#x65AD;&#x3002;</p>
+<h3 id="kbasedeviceinit"><a name="kbasedeviceinit" class="anchor-navigation-ex-anchor" href="#kbasedeviceinit"><i class="fa fa-link" aria-hidden="true"></i></a><a name="kbasedeviceinit" class="plugin-anchor" href="#kbasedeviceinit"><i class="fa fa-link" aria-hidden="true"></i></a>kbase_device_init</h3>
+<p>&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x521D;&#x59CB;&#x5316;&#x4E86;kernel&#x89C6;&#x89D2;&#x7684;device&#x3002;&#x9996;&#x5148;device_init&#x6839;&#x636E;GPU ID&#x8BBE;&#x7F6E;&#x4E86;&#x786C;&#x4EF6;issues mask&#xFF08;kbdev-&gt;hw_issues_mask&#xFF09;&#xFF0C;&#x7136;&#x540E;&#x6839;&#x636E;GPU ID&#x8BBE;&#x7F6E;&#x4E86;&#x7279;&#x6027;mask&#xFF08;kbdev-&gt;hw_features_mask&#xFF09;&#x3002;&#x968F;&#x540E;device_init&#x8BBE;&#x7F6E;&#x4E86;DMA&#x3002;&#x597D;&#x5427;&#xFF0C;&#x6211;&#x4E5F;&#x77E5;&#x9053;&#x8FD9;&#x53E5;&#x8BDD;&#x592A;&#x6577;&#x884D;&#x4E86;&#xFF0C;&#x4F46;&#x662F;&#x6211;&#x771F;&#x7684;&#x6CA1;&#x5F04;&#x660E;&#x767D;&#x4ED6;&#x5728;&#x5E72;&#x561B;&#xFF0C;&#x4E00;&#x5927;&#x5806;enum&#xFF0C;&#x7B49;&#x6211;&#x5F04;&#x660E;&#x767D;&#x4E86;&#x4E00;&#x5B9A;&#x56DE;&#x6765;&#x6539;&#x8FD9;&#x4E00;&#x6BB5;&#x3002;&#x4F46;&#x6211;&#x5984;&#x81EA;&#x63A8;&#x6D4B;&#xFF0C;&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x5C31;&#x662F;&#x8BBE;&#x7F6E;&#x4E86;&#x4E1C;&#x897F;&#xFF0C;&#x6CA1;&#x5565;&#x7814;&#x7A76;&#x4EF7;&#x503C;&#x3002;</p>
+<h3 id="kbasectxschedinit"><a name="kbasectxschedinit" class="anchor-navigation-ex-anchor" href="#kbasectxschedinit"><i class="fa fa-link" aria-hidden="true"></i></a><a name="kbasectxschedinit" class="plugin-anchor" href="#kbasectxschedinit"><i class="fa fa-link" aria-hidden="true"></i></a>kbase_ctx_sched_init</h3>
+<p>&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x521D;&#x59CB;&#x5316;&#x4E86;Context Scheduler&#xFF08;CS&#xFF09;&#x3002;&#x5BF9;&#x4E8E;&#x6211;&#x4E2A;&#x4EBA;&#x6765;&#x8BB2;&#xFF0C;CS&#x5E76;&#x4E0D;&#x662F;&#x5F88;&#x987E;&#x540D;&#x601D;&#x4E49;&#xFF0C;&#x5F53;&#x7136;&#x4E0D;&#x662F;&#x8BF4;&#x4ED6;&#x662F;&#x53CD;&#x6050;&#x7CBE;&#x82F1;&#xFF0C;&#x800C;&#x662F;&#x8FD9;&#x4E2A;&#x6240;&#x8C13;&#x7684;scheduler&#x7BA1;&#x7406;&#x5730;&#x5740;&#x7A7A;&#x95F4;&#x5206;&#x914D;&#x548C;kbase_context&#x7684;reference&#x8BA1;&#x6570;&#x3002;CS&#x7684;&#x5185;&#x90E8;&#x5B9E;&#x73B0;&#x5E76;&#x6CA1;&#x6709;&#x8C03;&#x5EA6;context&#x7684;&#x90E8;&#x5206;&#x3002;&#x5B83;&#x4F9D;&#x8D56;&#x4E8E;Job Scheduler&#x53BB;&#x51B3;&#x5B9A;&#x4EC0;&#x4E48;&#x65F6;&#x5019;&#x53BB;&#x8C03;&#x5EA6;/&#x9A71;&#x9010;&#x4E00;&#x4E2A;context&#x3002;&#x5728;&#x5C06;&#x6765;&#xFF08;&#x5F53;&#x7136;&#x6211;&#x76F8;&#x4FE1;&#x662F;&#x3002;&#x3002;&#x3002;&#x9065;&#x8FDC;&#x7684;&#x5C06;&#x6765;&#x3002;&#x3002;&#x3002;&#xFF09;&#xFF0C;&#x4E00;&#x65E6;&#x8FD9;&#x4E2A;&#x63A5;&#x53E3;&#x88AB;&#x8BBE;&#x8BA1;&#x6210;&#x62E5;&#x6709;&#x8DB3;&#x591F;&#x5173;&#x4E8E;context&#x6D88;&#x8017;&#x4E86;&#x591A;&#x5C11;GPU&#x8D44;&#x6E90;&#x7684;&#x4FE1;&#x606F;&#xFF0C;&#x90A3;&#x4E48;CS&#x5C31;&#x771F;&#x7684;&#x662F;scheduler&#x4E86;&#xFF0C;&#x5C31;&#x4E0D;&#x9700;&#x8981;&#x91CD;&#x590D;&#x7684;code&#x4E86;&#x3002;&#xFF08;&#x8FD9;&#x4E00;&#x6BB5;&#x662F;&#x7FFB;&#x8BD1;&#x8FC7;&#x6765;&#x7684;&#xFF0C;&#x6211;&#x5C3D;&#x529B;&#x4E86;&#xFF09;&#x3002;</p>
+<p>&#x5176;&#x5B9E;&#x8BB2;&#x9053;&#x7406;CS&#x8FD8;&#x662F;&#x633A;&#x5173;&#x952E;&#x7684;&#xFF0C;&#x6BD5;&#x7ADF;&#x7BA1;&#x7406;&#x5185;&#x5B58;&#x5206;&#x914D;&#xFF0C;&#x4F46;&#x662F;&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x672C;&#x8EAB;&#x5C31;&#x662F;&#x628A;&#x4E00;&#x4E9B;&#x53D8;&#x91CF;&#x521D;&#x59CB;&#x5316;&#x6210;0&#x3002;</p>
+<h3 id="kbasememinit--kbasedevicecoherencyinit"><a name="kbasememinit--kbasedevicecoherencyinit" class="anchor-navigation-ex-anchor" href="#kbasememinit--kbasedevicecoherencyinit"><i class="fa fa-link" aria-hidden="true"></i></a><a name="kbasememinit--kbasedevicecoherencyinit" class="plugin-anchor" href="#kbasememinit--kbasedevicecoherencyinit"><i class="fa fa-link" aria-hidden="true"></i></a>kbase_mem_init &amp; kbase_device_coherency_init</h3>
+<p>&#x521D;&#x59CB;&#x5316;&#x4E86;&#x5185;&#x5B58;&#x5565;&#x7684;&#xFF0C;&#x5C31;&#x8DDF;Linux&#x4E00;&#x6837;&#xFF0C;&#x7E41;&#x6587;&#x7F1B;&#x8282;&#x800C;&#x5DF2;&#x3002;&#x6211;&#x51B3;&#x5B9A;&#x7701;&#x7565;&#x4E00;&#x90E8;&#x5206;&#xFF0C;&#x611F;&#x89C9;&#x90FD;&#x662F;&#x786C;&#x4EF6;&#x76F8;&#x5173;&#x7684;&#x4E86;&#x3002;</p>
+<h3 id="kbasebackendlateinit"><a name="kbasebackendlateinit" class="anchor-navigation-ex-anchor" href="#kbasebackendlateinit"><i class="fa fa-link" aria-hidden="true"></i></a><a name="kbasebackendlateinit" class="plugin-anchor" href="#kbasebackendlateinit"><i class="fa fa-link" aria-hidden="true"></i></a>kbase_backend_late_init</h3>
+<p>&#x53C8;&#x662F;&#x4E00;&#x4E2A;&#x5173;&#x952E;&#x51FD;&#x6570;&#xFF0C;&#x5148;&#x662F;&#x901A;&#x8FC7;&#x4E00;&#x4E2A;hwaccess_pm_powerup&#x65B9;&#x5F0F;&#x4E00;&#x987F;&#x64CD;&#x4F5C;&#x628A;GPU&#x901A;&#x4E0A;&#x7535;&#x542F;&#x52A8;&#x8D77;&#x6765;&#x4E86;&#xFF0C;&#x7136;&#x540E;&#x521D;&#x59CB;&#x5316;&#x4E86;&#x4E00;&#x4E2A;timer&#xFF0C;&#x8FD9;&#x4E2A;timer&#x662F;&#x7528;&#x6765;&#x7ED9;Job Scheduler&#x6765;&#x63A7;&#x5236;&#x65F6;&#x95F4;&#x7684;&#x3002;&#x6700;&#x540E;&#xFF0C;late_init&#x521D;&#x59CB;&#x5316;&#x4E86;&#x7B49;&#x5F85;&#x5217;&#x8868;&#x5934;&#x3002;&#x7D27;&#x63A5;&#x7740;&#x8FD9;&#x4E2A;late_init&#xFF0C;kbdev-&gt;kctx_list&#x88AB;&#x521D;&#x59CB;&#x5316;&#x4E86;&#xFF0C;&#x8FD9;&#x4E2A;&#x94FE;&#x8868;&#x5E94;&#x8BE5;&#x662F;&#x7528;&#x6765;&#x5B58;&#x50A8;kernel context&#x4FE1;&#x606F;&#x7684;&#x3002;</p>
+<h3 id="miscregister"><a name="miscregister" class="anchor-navigation-ex-anchor" href="#miscregister"><i class="fa fa-link" aria-hidden="true"></i></a><a name="miscregister" class="plugin-anchor" href="#miscregister"><i class="fa fa-link" aria-hidden="true"></i></a>misc_register</h3>
+<p>&#x5728;<a href="http://www.2cto.com/os/linux/" target="_blank">Linux</a>&#x7CFB;&#x7EDF;&#x4E2D;&#xFF0C;&#x5B58;&#x5728;&#x4E00;&#x7C7B;&#x5B57;&#x7B26;&#x8BBE;&#x5907;&#xFF0C;&#x4ED6;&#x4EEC;&#x5171;&#x4EAB;&#x4E00;&#x4E2A;&#x4E3B;&#x8BBE;&#x5907;&#x53F7;&#xFF08;10&#xFF09;&#xFF0C;&#x4F46;&#x6B64;&#x8BBE;&#x5907;&#x53F7;&#x4E0D;&#x540C;&#xFF0C;&#x6211;&#x4EEC;&#x79F0;&#x8FD9;&#x7C7B;&#x8BBE;&#x5907;&#x4E3A;&#x6DF7;&#x6742;&#x8BBE;&#x5907;&#xFF08;miscdeivce&#xFF09;&#x3002; &#x6211;&#x81F3;&#x4ECA;&#x8FD8;&#x6CA1;&#x6709;&#x7406;&#x89E3;&#x8FD9;&#x4E2A;&#x4E1C;&#x897F;&#xFF0C;&#x65E2;&#x7136;GPU&#x5DF2;&#x7ECF;&#x88AB;&#x6CE8;&#x518C;&#x4E86;&#xFF0C;&#x4E3A;&#x4EC0;&#x4E48;&#x8FD8;&#x8981;&#x6CE8;&#x518C;&#x4E00;&#x4E2A;&#x6742;&#x9879;&#x8BBE;&#x5907;&#xFF1F;</p>
+<p>&#x597D;&#x5566;&#xFF0C;<del>&#x5C0F;&#x670B;&#x53CB;&#x4EEC;</del>&#x5404;&#x4F4D;&#xFF0C;&#x81F3;&#x6B64;&#x4E3A;&#x6B62;&#x8BBE;&#x5907;&#x5DF2;&#x7ECF;&#x88AB;&#x6CE8;&#x518C;&#x5230;&#x7CFB;&#x7EDF;&#x91CC;&#x4E86;&#xFF0C;GPU&#x88AB;&#x901A;&#x4E0A;&#x4E86;&#x7535;&#xFF0C;&#x5185;&#x5B58;&#x4E5F;&#x88AB;&#x521D;&#x59CB;&#x5316;&#x597D;&#x4E86;&#xFF0C;&#x5C31;&#x7B49;&#x7740;&#x88AB;&#x5206;&#x914D;&#x4EFB;&#x52A1;&#x4E86;&#x3002;&#x5E76;&#x4E14;&#x5BF9;&#x8BBE;&#x5907;&#x7684;&#x62BD;&#x8C61;kbdev&#x4E5F;&#x88AB;&#x586B;&#x5145;&#x7684;&#x5DEE;&#x4E0D;&#x591A;&#x4E86;&#xFF0C;&#x4E00;&#x4E9B;&#x8981;&#x4ECE;GPU&#x4E0A;&#x8BFB;&#x53D6;&#x7684;&#x4FE1;&#x606F;&#x4E5F;&#x8BFB;&#x53D6;&#x51FA;&#x6765;&#x4E86;&#x3002;<del>&#x5728;&#x7206;&#x7AF9;&#x58F0;&#x4E2D;</del>&#x6211;&#x4EEC;&#x7684;&#x8FD9;&#x4E00;&#x7AE0;&#x4E5F;&#x7ED3;&#x675F;&#x4E86;</p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="../" class="navigation navigation-prev " aria-label="Previous page: 前言">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="dai-ma-shi-zen-me-dao-gpu-de.html" class="navigation navigation-next " aria-label="Next page: 代码是怎么到GPU的">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"description":"内核自举模块载，显卡注册驱动生 （王子旭，2019）","title":"设备注册: GPU Register","level":"1.2","depth":1,"next":{"title":"代码是怎么到GPU的","level":"1.3","depth":1,"path":"chapter-1/dai-ma-shi-zen-me-dao-gpu-de.md","ref":"chapter-1/dai-ma-shi-zen-me-dao-gpu-de.md","articles":[]},"previous":{"title":"前言","level":"1.1","depth":1,"path":"README.md","ref":"README.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-sharing","splitter","expandable-chapters-small","anchors","github","github-buttons","sharing-plus","anchor-navigation-ex","comment","livereload"],"styles":{"website":"./styles/website.css"},"pluginsConfig":{"github":{"url":"https://github.com/jizhuoran"},"livereload":{},"splitter":{},"search":{},"sharing-plus":{"qq":false,"all":["facebook","google","twitter","instapaper","linkedin","pocket","stumbleupon"],"douban":false,"facebook":true,"weibo":false,"instapaper":false,"whatsapp":false,"hatenaBookmark":false,"twitter":true,"messenger":false,"line":false,"vk":false,"pocket":true,"google":false,"viber":false,"stumbleupon":false,"qzone":false,"linkedin":false},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"anchor-navigation-ex":{"associatedWithSummary":true,"float":{"floatIcon":"fa fa-navicon","level1Icon":"","level2Icon":"","level3Icon":"","showLevelIcon":false},"mode":"float","multipleH1":true,"pageTop":{"level1Icon":"","level2Icon":"","level3Icon":"","showLevelIcon":false},"printLog":false,"showGoTop":true,"showLevel":false},"github-buttons":{"buttons":[{"user":"jizhuoran","repo":"Mali-GPU-Docs","type":"star","size":"large","count":true}]},"expandable-chapters-small":{},"sharing":{"qq":false,"all":["google","facebook","weibo","twitter","qq","qzone","linkedin","pocket"],"douban":false,"facebook":false,"weibo":false,"instapaper":false,"whatsapp":false,"hatenaBookmark":false,"twitter":false,"messenger":false,"line":false,"vk":false,"pocket":false,"google":false,"viber":false,"stumbleupon":false,"qzone":false,"linkedin":false},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"anchors":{},"comment":{"highlightCommented":true}},"theme":"default","author":"Zhuoran JI","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"年子: Mali GPU 驱动详解","language":"zh-hans","gitbook":"3.2.3","description":"select * from learn"},"file":{"path":"chapter-1/she-bei-zhu-ce-gpu-register.md","mtime":"2019-01-18T02:54:52.443Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-01-18T03:20:55.760Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-splitter/splitter.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-expandable-chapters-small/expandable-chapters-small.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-github/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-github-buttons/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing-plus/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-comment/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-livereload/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

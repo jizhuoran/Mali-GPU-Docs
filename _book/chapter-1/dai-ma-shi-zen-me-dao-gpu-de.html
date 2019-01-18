@@ -1,0 +1,302 @@
+
+<!DOCTYPE HTML>
+<html lang="zh-hans" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>代码是怎么到GPU的 · 年子: Mali GPU 驱动详解</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        <meta name="author" content="Zhuoran JI">
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-splitter/splitter.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-expandable-chapters-small/expandable-chapters-small.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-anchors/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-anchor-navigation-ex/style/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-comment/plugin.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+
+        
+    
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    
+    <link rel="prev" href="she-bei-zhu-ce-gpu-register.html" />
+    
+
+    <style>
+    @media only screen and (max-width: 640px) {
+        .book-header .hidden-mobile {
+            display: none;
+        }
+    }
+    </style>
+    <script>
+        window["gitbook-plugin-github-buttons"] = {"buttons":[{"user":"jizhuoran","repo":"Mali-GPU-Docs","type":"star","size":"large","count":true}]};
+    </script>
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="输入并搜索" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    前言
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="she-bei-zhu-ce-gpu-register.html">
+            
+                <a href="she-bei-zhu-ce-gpu-register.html">
+            
+                    
+                    设备注册: GPU Register
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.3" data-path="dai-ma-shi-zen-me-dao-gpu-de.html">
+            
+                <a href="dai-ma-shi-zen-me-dao-gpu-de.html">
+            
+                    
+                    代码是怎么到GPU的
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            本书使用 GitBook 发布
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >代码是怎么到GPU的</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <div id="anchor-navigation-ex-navbar"><i class="fa fa-navicon"></i><ul><li><span class="title-icon "></span><a href="#&#x4EE3;&#x7801;&#x662F;&#x600E;&#x4E48;&#x5230;gpu&#x7684;"><b></b>&#x4EE3;&#x7801;&#x662F;&#x600E;&#x4E48;&#x5230;GPU&#x7684;</a></li></ul></div><a href="#&#x4EE3;&#x7801;&#x662F;&#x600E;&#x4E48;&#x5230;gpu&#x7684;" id="anchorNavigationExGoTop"><i class="fa fa-arrow-up"></i></a><h1 id="&#x4EE3;&#x7801;&#x662F;&#x600E;&#x4E48;&#x5230;gpu&#x7684;"><a name="&#x4EE3;&#x7801;&#x662F;&#x600E;&#x4E48;&#x5230;gpu&#x7684;" class="anchor-navigation-ex-anchor" href="#&#x4EE3;&#x7801;&#x662F;&#x600E;&#x4E48;&#x5230;gpu&#x7684;"><i class="fa fa-link" aria-hidden="true"></i></a><a name="&#x4EE3;&#x7801;&#x662F;&#x600E;&#x4E48;&#x5230;gpu&#x7684;" class="plugin-anchor" href="#&#x4EE3;&#x7801;&#x662F;&#x600E;&#x4E48;&#x5230;gpu&#x7684;"><i class="fa fa-link" aria-hidden="true"></i></a>&#x4EE3;&#x7801;&#x662F;&#x600E;&#x4E48;&#x5230;GPU&#x7684;</h1>
+<p>&#x5728;&#x5F00;&#x59CB;&#x8FD9;&#x4E00;&#x7AE0;&#x8282;&#x4E4B;&#x524D;&#xFF0C;&#x51B3;&#x5B9A;&#x5148;&#x804A;&#x4F1A;&#x513F;&#x95F2;&#x5929;&#x3002;&#x4F5C;&#x4E3A;&#x4E00;&#x4E2A;&#x6280;&#x672F;&#x6587;&#x7AE0;&#xFF0C;&#x4E0A;&#x6765;&#x5C31;&#x8BB2;&#x6280;&#x672F;&#x7684;&#x90FD;&#x662F;&#x5916;&#x884C;&#xFF0C;&#x90A3;&#x662F;&#x4EE3;&#x7801;&#x8F85;&#x5BFC;&#x5458;&#xFF0C;&#x771F;&#x6B63;&#x597D;&#x7684;&#x6587;&#x7AE0;&#x4E00;&#x5B9A;&#x662F;&#x5148;&#x804A;&#x5BB6;&#x5E38;&#xFF0C;&#x6162;&#x6162;&#x628A;&#x4F60;&#x5F15;&#x5BFC;<del>&#x6545;&#x4E8B;</del>&#x5185;&#x5BB9;&#x5F53;&#x4E2D;&#x6765;&#x3002;&#x6211;&#x60F3;&#x4F60;&#x5728;&#x770B;&#x8FD9;&#x672C;&#x4E66;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x4E5F;&#x4E0D;&#x53EF;&#x80FD;&#x662F;&#x711A;&#x9999;&#x6C90;&#x6D74;&#xFF0C;&#x6B63;&#x895F;&#x5371;&#x5750;&#x7684;&#x4E00;&#x9875;&#x4E00;&#x9875;&#x7FFB;&#x770B;&#x3002;&#x5982;&#x679C;&#x771F;&#x662F;&#x8FD9;&#x6837;&#xFF0C;&#x90A3;&#x7EDD;&#x5BF9;&#x662F;&#x6211;&#x7684;&#x5931;&#x8D25;&#x3002;&#x5728;&#x6211;&#x7684;&#x671F;&#x671B;&#x4E2D;&#xFF0C;&#x8BFB;&#x8005;&#x90FD;&#x5E94;&#x8BE5;&#x5DE6;&#x624B;&#x62FF;&#x7740;&#x70E4;&#x7F8A;&#x8170;&#x5B50;&#xFF0C;&#x53F3;&#x624B;&#x62FF;&#x7740;&#x5564;&#x9152;&#xFF0C;&#x4EAB;&#x53D7;&#x7740;&#x9605;&#x8BFB;&#x6211;&#x8FD9;&#x4E2A;&#x53E8;&#x903C;&#x53E8;&#x7684;&#x73A9;&#x610F;&#x513F;&#x3002;&#x6709;&#x4EBA;&#x8BF4;&#x4E0D;&#x80FD;&#x4E3A;&#x4E86;&#x5403;&#x6D3B;&#x7740;&#xFF0C;&#x771F;&#x6B63;&#x9AD8;&#x5C1A;&#x7684;&#x4EBA;&#x90FD;&#x662F;&#x4E3A;&#x4E86;&#x6D3B;&#x7740;&#x800C;&#x5403;&#xFF0C;&#x4F46;&#x6211;&#x89C9;&#x5F97;&#x771F;&#x6B63;&#x7684;&#x4EBA;&#x751F;&#x5E94;&#x8BE5;&#x662F;&#x4E14;&#x6D3B;&#x4E14;&#x5403;&#x3002;</p>
+<p>&#x597D;&#x4E86;&#xFF0C;&#x9053;&#x7406;&#x6211;&#x90FD;&#x61C2;&#xFF0C;&#x6240;&#x4EE5;GPU&#x662F;&#x600E;&#x4E48;&#x83B7;&#x53D6;instructions&#x7684;&#xFF1F;&#x5176;&#x5B9E;&#x771F;&#x6B63;&#x7684;&#x7B54;&#x6848;&#x662F;&#xFF0C;&#x6211;&#x4E5F;&#x4E0D;&#x77E5;&#x9053;&#x3002;&#x771F;&#x7684;&#x6C14;&#x554A;&#xFF0C;&#x627E;&#x4E86;&#x4E00;&#x5929;&#x8D44;&#x6599;&#xFF0C;&#x6CA1;&#x6709;&#x4E00;&#x4E2A;GPU&#x751F;&#x4EA7;&#x5382;&#x5BB6;&#x8BF4;&#x8FC7;&#x8FD9;&#x4E2A;&#x4E8B;&#x513F;&#x3002;&#x6211;&#x5C31;&#x4E0D;&#x660E;&#x767D;&#x4E86;&#xFF0C;&#x8FD9;&#x4E2A;&#x4E1C;&#x897F;&#x80FD;&#x7B97;&#x505A;&#x673A;&#x5BC6;&#x5417;&#xFF1F;&#x6211;&#x4E00;&#x6C14;&#x4E4B;&#x4E0B;&#x5C31;&#x901A;&#x8FC7;driver&#x9006;&#x5411;&#x731C;&#x6D4B;&#x4E86;&#x4E00;&#x4E0B;&#x8FD9;&#x4E2A;&#x8FC7;&#x7A0B;&#xFF0C;&#x4EC5;&#x4EC5;&#x662F;&#x5199;&#x51FA;&#x6765;<del>&#x9632;&#x6B62;&#x81EA;&#x5DF1;&#x5FD8;&#x4E86;</del>&#x7ED9;&#x5927;&#x5BB6;&#x5206;&#x4EAB;&#x4E00;&#x4E0B;&#x3002;&#x4F46;&#x662F;&#x8981;&#x6CE8;&#x610F;&#x4E24;&#x70B9;&#xFF0C;&#x4E00;&#x662F;&#x8FD9;&#x4E2A;&#x662F;&#x6211;&#x559D;&#x7740;&#x5564;&#x9152;&#x778E;&#x731C;&#x51FA;&#x6765;&#x4E86;&#xFF0C;&#x4E8C;&#x662F;&#x8FD9;&#x4E2A;&#x53EA;&#x662F;Mali GPU&#x7684;&#x4E00;&#x4E2A;&#x65B9;&#x6848;&#x3002;</p>
+<p>&#x9996;&#x5148;&#x8BB2;&#x4E00;&#x4E0B;&#x5927;&#x7EA6;&#x7684;&#x601D;&#x8DEF;&#xFF0C;&#x5F53;&#x7528;&#x6237;&#x8BF4;&#x8981;&#x6267;&#x884C;&#x4E00;&#x4E2A;GPU&#x4EE3;&#x7801;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x7528;&#x6237;&#x4F1A;&#x7ED9;driver&#x4E00;&#x4E2A;&#x5730;&#x5740;&#xFF0C;&#x8FD9;&#x4E2A;&#x5730;&#x5740;&#x5C31;&#x6307;&#x5411;&#x4E86;&#x8FD9;&#x6BB5;&#x4EE3;&#x7801;&#xFF0C;&#x5F53;&#x7136;&#x662F;GPU&#x7684;&#x673A;&#x5668;&#x7801;&#x3002;&#x7136;&#x540E;driver&#x4F1A;&#x628A;&#x8FD9;&#x4E2A;&#x5730;&#x5740;&#x5199;&#x5230;GPU&#x7684;&#x5BC4;&#x5B58;&#x5668;&#x4E0A;&#xFF0C;&#x7136;&#x540E;driver&#x4F1A;&#x544A;&#x8BC9;GPU&#xFF0C;<del>&#x4E0B;&#x6765;&#x63A5;&#x5BA2;&#xFF08;&#x5DEE;&#x70B9;&#x6D89;&#x9EC4;&#x554A;</del>&#xFF09;&#x6765;&#x4EFB;&#x52A1;&#x4E86;&#xFF0C;GPU&#x5C31;&#x4F1A;&#x901A;&#x8FC7;DMA&#x628A;&#x8FD9;&#x6BB5;&#x4EE3;&#x7801;&#x8BFB;&#x5230;&#x4E00;&#x4E2A;&#x53EB;&#x505A;Job Manager&#x7684;&#x5730;&#x65B9;&#xFF0C;&#x8FD9;&#x4E2A;Job Manager&#x662F;GPU&#x4E0A;&#x7269;&#x7406;&#x5B58;&#x5728;&#x7684;&#x4E00;&#x4E2A;&#x4E1C;&#x897F;&#xFF0C;&#x800C;&#x4E14;&#x91CC;&#x9762;&#x5E94;&#x8BE5;&#x6709;&#x4E2A;instruction memory&#x3002;</p>
+<p>&#x5F53;&#x7136;GPU&#x4E5F;&#x4E0D;&#x662F;&#x4F60;&#x8BA9;&#x4ED6;&#x5E72;&#x5565;&#xFF0C;&#x4ED6;&#x5C31;&#x7ACB;&#x9A6C;&#x53BB;&#x5E72;&#x5565;&#xFF0C;&#x5728;Mali&#x7684;&#x4E00;&#x4E2A;<a href="http://fileadmin.cs.lth.se/cs/Education/EDAN35/guestLectures/ARM-Mali.pdf" target="_blank">PPT</a>&#x91CC;&#xFF08;&#x771F;&#x7684;&#x627E;&#x7684;&#x6211;&#x5FC3;&#x7D2F;&#x554A;&#xFF09;&#x63D0;&#x5230;&#x8FC7;&#x6709;&#x5728;&#x786C;&#x4EF6;&#x773C;&#x91CC;&#x6709;&#x4E09;&#x79CD;jobs&#xFF0C;&#x5206;&#x522B;&#x662F; Vertex Job(V)&#xFF0C;  Tiler Job(T) &#x548C; Fragment Job(F)&#x3002;&#x76F8;&#x5E94;&#x7684;&#xFF0C;&#x5728;driver&#x5411;GPU&#x63D0;&#x4EA4;&#x4EFB;&#x52A1;&#x7684;&#x65F6;&#x5019;&#xFF0C;&#x53EF;&#x4EE5;&#x6307;&#x5B9A;&#x4E00;&#x4E2A;Job Slots&#xFF0C;&#x53EF;&#x80FD;&#x7684;&#x503C;&#x662F;0&#xFF0C;1&#xFF0C;2&#x3002;&#x5982;&#x679C;&#x4F60;&#x575A;&#x4FE1;&#x8FD9;&#x662F;&#x4E00;&#x4E2A;&#x5DE7;&#x5408;&#xFF0C;&#x90A3;&#x4E48;&#x3002;&#x3002;&#x3002;&#x597D;&#x5427;&#xFF0C;&#x4F60;&#x4E0D;&#x80FD;&#x8BA4;&#x4E3A;&#x8FD9;&#x662F;&#x4E2A;&#x5DE7;&#x5408;&#xFF0C;&#x8FD9;&#x610F;&#x5473;&#x7740;GPU&#x91CC;&#x80FD;&#x540C;&#x65F6;&#x5B58;&#x5206;&#x522B;&#x8C03;&#x5EA6;&#x7684;3&#x79CD;&#x4EFB;&#x52A1;&#xFF0C;&#x5E76;&#x4E14;&#x8FD9;&#x4E09;&#x79CD;&#x4EFB;&#x52A1;&#x6709;&#x81EA;&#x5DF1;&#x7684;priority&#x3002;</p>
+<p>&#x5177;&#x4F53;&#x5230;&#x4EE3;&#x7801;&#x4E0A;&#x6765;&#x5462;&#xFF0C;&#x5F53;&#x4E00;&#x5207;&#x90FD;&#x51C6;&#x5907;&#x5C31;&#x7EEA;&#xFF0C;&#x538B;&#x5012;GPU&#x7684;&#x6700;&#x540E;&#x4E00;&#x6839;&#x7A3B;&#x8349;&#x5C31;&#x662F;&#x4E00;&#x4E2A;&#x53EB;<strong>kbase_job_hw_submit</strong>&#x7684;&#x51FD;&#x6570;&#x3002;&#x8FD9;&#x4E2A;&#x51FD;&#x6570;&#x9996;&#x5148;&#x56DE;&#x53BB;&#x770B;JS_COMMAND_NEXT&#x8FD9;&#x4E2A;&#x5BC4;&#x5B58;&#x5668;&#x662F;&#x4E0D;&#x662F;&#x7A7A;&#xFF0C;&#x5982;&#x679C;&#x662F;&#xFF0C;&#x90A3;&#x4E48;&#x673A;&#x5668;&#x7801;&#x7684;&#x5730;&#x5740;&#x7684;&#x5934;&#x5C31;&#x4F1A;&#x88AB;&#x5199;&#x8FDB;&#x5BC4;&#x5B58;&#x5668;&#x91CC;&#x3002;&#x7ECF;&#x8FC7;&#x4E00;&#x4E9B;&#x65E0;&#x804A;&#x7684;&#x64CD;&#x4F5C;&#x4E4B;&#x540E;&#xFF0C;driver&#x4F1A;&#x7ED9;&#x8FD9;&#x4E2A;&#x4EFB;&#x52A1;&#xFF0C;&#x556A;&#x7684;&#x4E00;&#x58F0;&#xFF0C;&#x6253;&#x4E0A;&#x4E00;&#x4E2A;&#x65F6;&#x95F4;&#x6233;&#x3002;&#x5728;&#x8BBE;&#x7F6E;&#x597D;&#x5F88;&#x591A;trace&#x51FD;&#x6570;&#x4E4B;&#x540E;&#xFF0C;driver&#x4F1A;&#x5199;JS_COMMAND_NEXT&#x8FD9;&#x4E2A;&#x5BC4;&#x5B58;&#x5668;&#x5199;&#x4E0A;&#x4E00;&#x4E2A;START&#xFF0C;&#x8FD9;&#x4E2A;&#x4EFB;&#x52A1;&#x5C31;&#x8FDB;&#x5165;ALU&#x7684;&#x6C6A;&#x6D0B;&#x5927;&#x6D77;&#x5F53;&#x4E2D;&#x4E86;&#x3002;</p>
+<p>&#x5F53;&#x7136;&#x8FD9;&#x91CC;&#x6211;&#x6F0F;&#x6389;&#x4E86;&#x4E00;&#x4E2A;&#x7EC6;&#x8282;&#xFF0C;&#x5C31;&#x662F;&#x4E00;&#x4E2A;job slot&#x5230;&#x5E95;&#x80FD;&#x653E;&#x591A;&#x5C11;&#x4E2A;job(s)&#xFF1F;&#x5F88;&#x9057;&#x61BE;&#x6211;&#x73B0;&#x5728;&#x8FD8;&#x4E0D;&#x77E5;&#x9053;&#xFF0C;&#x4F46;&#x6211;&#x77E5;&#x9053;&#x600E;&#x4E48;&#x53BB;&#x77E5;&#x9053;&#xFF0C;&#x6240;&#x4EE5;&#x4E4B;&#x540E;&#x6211;&#x5C31;&#x4F1A;&#x53BB;&#x77E5;&#x9053;&#x77E5;&#x9053;&#x3002;</p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="she-bei-zhu-ce-gpu-register.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page: 设备注册: GPU Register">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"代码是怎么到GPU的","level":"1.3","depth":1,"previous":{"title":"设备注册: GPU Register","level":"1.2","depth":1,"path":"chapter-1/she-bei-zhu-ce-gpu-register.md","ref":"chapter-1/she-bei-zhu-ce-gpu-register.md","articles":[]},"dir":"ltr"},"config":{"plugins":["-sharing","splitter","expandable-chapters-small","anchors","github","github-buttons","sharing-plus","anchor-navigation-ex","comment","livereload"],"styles":{"website":"./styles/website.css"},"pluginsConfig":{"github":{"url":"https://github.com/jizhuoran"},"livereload":{},"splitter":{},"search":{},"sharing-plus":{"qq":false,"all":["facebook","google","twitter","instapaper","linkedin","pocket","stumbleupon"],"douban":false,"facebook":true,"weibo":false,"instapaper":false,"whatsapp":false,"hatenaBookmark":false,"twitter":true,"messenger":false,"line":false,"vk":false,"pocket":true,"google":false,"viber":false,"stumbleupon":false,"qzone":false,"linkedin":false},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"highlight":{},"anchor-navigation-ex":{"associatedWithSummary":true,"float":{"floatIcon":"fa fa-navicon","level1Icon":"","level2Icon":"","level3Icon":"","showLevelIcon":false},"mode":"float","multipleH1":true,"pageTop":{"level1Icon":"","level2Icon":"","level3Icon":"","showLevelIcon":false},"printLog":false,"showGoTop":true,"showLevel":false},"github-buttons":{"buttons":[{"user":"jizhuoran","repo":"Mali-GPU-Docs","type":"star","size":"large","count":true}]},"expandable-chapters-small":{},"sharing":{"qq":false,"all":["google","facebook","weibo","twitter","qq","qzone","linkedin","pocket"],"douban":false,"facebook":false,"weibo":false,"instapaper":false,"whatsapp":false,"hatenaBookmark":false,"twitter":false,"messenger":false,"line":false,"vk":false,"pocket":false,"google":false,"viber":false,"stumbleupon":false,"qzone":false,"linkedin":false},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"anchors":{},"comment":{"highlightCommented":true}},"theme":"default","author":"Zhuoran JI","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"年子: Mali GPU 驱动详解","language":"zh-hans","gitbook":"3.2.3","description":"select * from learn"},"file":{"path":"chapter-1/dai-ma-shi-zen-me-dao-gpu-de.md","mtime":"2019-01-18T02:54:52.443Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2019-01-18T03:20:55.760Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-splitter/splitter.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-expandable-chapters-small/expandable-chapters-small.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-github/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-github-buttons/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing-plus/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-comment/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-livereload/plugin.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+
