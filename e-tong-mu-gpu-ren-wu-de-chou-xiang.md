@@ -8,5 +8,11 @@
 
 同时，用户还可以指定一个**prio**，用来代表这个任务的priority。还有一个变量叫做**atom_number**，相当于这个atom的id，应该是程序自己决定的。当然，因为GPU允许异步执行，这就要考虑依赖的问题，所以用户可以把当前atom所依赖的atom(s)加到一个叫**pre_dep**的变量里。这个变量是个class，里面只有两个变量，一个是atom的id，一个是依赖的种类。只有当依赖都满足的时候，这个atom才会被（执行 || 提交到GPU里）。
 
-花开两朵，各表一枝
+花开两朵，各表一枝。对于kbase_jd_atom，就是driver眼中的任务了，既然是driver眼中的，那我们为什么要关心呢？所以就不讲了吧。。。好吧，这本书叫driver详解。
 
+1. 首先katom里有一个work_struct，就是Linux的work_queue里放的那个work_struct。
+2. 有一个时间戳，这个时间戳记录了这个atom是什么时候提交给GPU的
+3. kctx：指向这个atom属于哪个context，这个东西不在base_jd_atom_v2里，所以提交base_jd_atom_v2的时候需要把kctx也给传进去
+4. 有三个关于dependency的东西，dep_head存储了被这个atom block住的atoms，dep_item存储了和这个atom依赖相同东西的atoms，最后dep里有这个atom所依赖的两个atom
+5. 指向GPU机器码的jc和其复制softjob_data
+6. 还有其他许许多多的内容
