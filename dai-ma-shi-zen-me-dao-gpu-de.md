@@ -6,7 +6,7 @@
 
 首先讲一下大约的思路，当用户说要执行一个GPU代码的时候，用户会给driver一个地址，这个地址就指向了这段代码，当然是GPU的机器码。然后driver会把这个地址写到GPU的寄存器上，然后driver会告诉GPU，~~下来接客（差点涉黄啊~~）来任务了，GPU就会通过DMA把这段代码读到一个叫做Job Manager的地方，这个Job Manager是GPU上物理存在的一个东西，而且里面应该有个instruction memory。
 
-当然GPU也不是你让他干啥，他就立马去干啥，在Mali的一个[PPT](http://fileadmin.cs.lth.se/cs/Education/EDAN35/guestLectures/ARM-Mali.pdf)里（真的找的我心累啊）提到过有在硬件眼里有三种jobs，分别是 Vertex Job\(V\)，  Tiler Job\(T\) 和 Fragment Job\(F\)。相应的，在driver向GPU提交任务的时候，可以指定一个Job Slots，可能的值是0，1，2。如果你坚信这是一个巧合，那么。。。好吧，你不能认为这是个巧合，这意味着GPU里能同时存分别调度的3种任务，并且这三种任务有自己的priority。
+当然GPU也不是你让他干啥，他就立马去干啥，在Mali的一个[PPT](http://fileadmin.cs.lth.se/cs/Education/EDAN35/guestLectures/ARM-Mali.pdf)里（真的找的我心累啊）提到过有在硬件眼里有三种jobs，分别是 Vertex Job\(V\)， Tiler Job\(T\) 和 Fragment Job\(F\)。相应的，在driver向GPU提交任务的时候，可以指定一个Job Slots，可能的值是0，1，2。如果你坚信这是一个巧合，那么。。。好吧，你不能认为这是个巧合，这意味着GPU里能同时存分别调度的3种任务，并且这三种任务有自己的priority。
 
 具体到代码上来呢，当一切都准备就绪，压倒GPU的最后一根稻草就是一个叫**kbase\_job\_hw\_submit**的函数。这个函数首先回去看JS\_COMMAND\_NEXT这个寄存器是不是空，如果是，那么机器码的地址的头就会被写进寄存器里。经过一些无聊的操作之后，driver会给这个任务，啪的一声，打上一个时间戳。在设置好很多trace函数之后，driver会写JS\_COMMAND\_NEXT这个寄存器写上一个START，这个任务就进入ALU的汪洋大海当中了。
 
