@@ -8,7 +8,7 @@
 
 首先，我们得猜与之相关的寄存器分别代表什么意思，这里一共有六个寄存器，分别是JOB\_IRQ\_RAWSTAT， JOB\_IRQ\_CLEAR，JOB\_IRQ\_MASK，JOB\_IRQ\_STATUS，JOB\_IRQ\_JS\_STATE，JOB\_IRQ\_THROTTLE。
 
-经过我 胆大包天 胆大心细的分析，第一个JOB\_IRQ\_RAWSTAT就是真正的代表所有状态的寄存器，而JOB\_IRQ\_STATUS就是经过JOB\_IRQ\_MASK之后的状态寄存器。由于driver可能不想被某些中断打断，所以会mask掉一些中断，但是根据源码分析，mask仅仅是阻止了CPU被这个中断而打断，而不是完全忽略他们。如果存在一个能中断CPU的中断，那么处理完这个中断中priority最高的之后，driver会去读区RAWSTAT这个寄存器，这意味着那些被mask掉的中断也会被处理。
+经过我 胆大包天 胆大心细的分析，第一个JOB\_IRQ\_RAWSTAT就是真正的代表所有状态的寄存器，而JOB\_IRQ\_STATUS就是经过JOB\_IRQ\_MASK之后的状态寄存器。由于driver可能不想被某些中断打断，所以会mask掉一些中断，但是根据源码分析，mask仅仅是阻止了CPU被这个中断而打断，而不是完全忽略他们。如果存在一个能中断CPU的中断，那么处理完这个中断中priority最高的之后，driver会去读区RAWSTAT这个寄存器，这意味着那些被mask掉的中断也会被处理。无论是JOB\_IRQ\_STATUS还是JOB\_IRQ\_RAWSTAT，他们的高16位都代表着相应job slot由于failure而产生的中断，而低16位都代表着由于完成而产生的中断。
 
 对于JOB\_IRQ\_CLEAR，这应该是个write-only的寄存器，如果给CLEAR的某个bit写上1，那么对应的RAWSTAT就会把相应的bit变成0。但我猜测JOB\_IRQ\_STATUS也会相应的变化。
 

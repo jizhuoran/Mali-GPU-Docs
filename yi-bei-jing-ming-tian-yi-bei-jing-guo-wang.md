@@ -10,27 +10,23 @@
 
 ### kbase\_job\_done
 
-如果job slot报告了一个failure，那么就会先通过相应的寄存器检查这个slot的状态。如果状态是JD\_EVENT\_STOPPED，就证明这个job是被soft stop了，就要读取出这个job的JS&lt;n&gt;\_TAIL，之后job chain可以凭此来重启这个job。如果状态是NOT\_STARTED，就知道这个是因为PRLAM-10673导致到停止，（当然我也不知道这个诡异的代码是啥意思）我们就把状态设置成TERMINATED。最后调用kbase\_gpu\_irq\_evict来evict这个job slot的NEXT。
+首先我们会把这个done的高16位和低16位做一个or操作，这样如果某一位是1，就代表相应的job slot不是failure就是finish了。接着，我们会找到最高的是1的位，来进行一系列操作。
 
-在支出去处理完failure之后，函数就会回到主体。我们先给JOB\_IRQ\_CLEAR写上相应的值，然后读取JOB\_IRQ\_JS\_STATE这个寄存器的值，记作active。
+我们首先进行failure的处理，我们判断高16位相应的job slot是不是1，如果是的话了，我们就需要处理failure。为我们会先通过JS\_STATUS寄存器检查这个slot的状态。如果状态是JD\_EVENT\_STOPPED，就证明这个job是被soft stop了，就要读取出这个job的JS&lt;n&gt;\_TAIL，之后job chain可以凭此来重启这个job。如果状态是NOT\_STARTED，就知道这个是因为PRLAM-10673导致到停止，（当然我也不知道这个诡异的代码是啥意思）我们就把状态设置成TERMINATED。
 
-接着，我们会读取这个job slot上有多少个已经提交的job，就是有多少个job处于SUBMITTED的状态，记作nr\_done。如果active的第i位是1，那么就把nr\_done减去1，如果active的第i+1位也是1，那么就再把nr\_done减1。很明显，在这种情况下，nr\_done不应该小于0。
+最后，我们会根据这个状态来调用kbase\_gpu\_irq\_evict来evict这个job slot的NEXT，至此为止failure就算是处理完了。
+
+在支出去处理完failure之后，函数就会回到主体。首先我们会先给JOB\_IRQ\_CLEAR相应的高16位的和低16位的位置写上1，这样的话了就会把JOB\_IRQ\_STATUS还是JOB\_IRQ\_RAWSTAT相应的位置变成0。
+
+然后，我们会读取JOB\_IRQ\_JS\_STATE这个寄存器的值，记作active。接着，我们会读取这个job slot上有多少个已经提交的job，就是有多少个job处于SUBMITTED的状态，记作nr\_done。如果active的第i位是1，那么就把nr\_done减去1，如果active的第i+16位也是1，那么就再把nr\_done减1。很明显，在这种情况下，nr\_done不应该小于等于0。因为如前面介绍，如果active的第i位是1，就证明GPU上第i个job slot上有活跃的job，如果第i+16位是1，则代表_next上有job。如果两个都有job，这就是很奇怪的事情了，毕竟之所以产生中断就是因为有job完成或者失败了，这时候你告诉我，我就叫着中断玩儿，显然是不合适的。
+
+当然在这里我们要注意一个race condition。如果这个中断是由于current完成而产生的，那么_next上的job就会被送到current上，如果这个时候这个新的current job恰好失败了，那么我们现在并不知道这个failure。所以如果active的第i位是0，并且failure的第i位也是0，我们就需要重新读取JOB\_IRQ\_RAWSTAT，看在调用这个处理函数的时候有没有新的failure产生。如果有的话了，我们就把active的相应位设成1以示记录。
+
 
 如果nr\_done是1，就证明只有一个job完成了，我们就执行kbase\_gpu\_complete\_hw 并且 执行kbase\_jm\_try\_kick\_all试图再提交一个job到GPU上。
 
-如果nr\_done是2，就说明有超过一个job被完成了。因为这不是最后一个被reported，这一次必须passed。这是因为硬件不允许完成后续的job直到失败的job被从IRQ status上清理掉。
+如果nr\_done是2，就说明有超过一个job被完成了，我们就只调用kbase_gpu_complete_hw。因为这不是最后一个被reported，这一次必须passed。这是因为硬件不允许完成后续的job直到失败的job被从IRQ status上清理掉。
 
-之后再次从JOB\_IRQ\_RAWSTAT寄存器里读取值到done里，如果读取到的值不为0，就重复执行这个函数。
+最后我们再次从JOB\_IRQ\_RAWSTAT寄存器里读取值到done里，如果读取到的值不为0，就重复执行这个函数。
 
-
-
-感觉这个处理完成的job的逻辑远远比我想象的要复杂，下个周会再详细解释这一部分。感觉很对不起大家，草草写完这一章。我发现强行一周三更会损害质量，所以我决定随心所欲，不逾矩。
-
-
-
-
-
-
-
-请无视这一段（如果active的第i位和done的第i+1位都是0，那么会有潜在的race。在这种情况下，一个job slot在current和next寄存器上都有job，在current上的job成功的完成了，IRQ handler读取了RAWSTAT并且在调用这个function的时候把相应的bit设置成了“done”。在next寄存器上的job变成了在current寄存器上的job，）
 
