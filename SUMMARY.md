@@ -10,4 +10,5 @@
 * [一杯敬明天，一杯敬过往](yi-bei-jing-ming-tian-yi-bei-jing-guo-wang.md)
 * [寄存器的遐想](ji-cun-qi-de-xiang.md)
 * [从GPU的角度看job的完成](cong-GPU-de-jiao-du-kan-job-wan-cheng.md)
-* [job完成的全过程：从JM到JS在到JD](cong-JM-dao-JS-dao-JD.md)
+* [job完成的全过程：从JM到JS到JD](cong-JM-dao-JS-dao-JD.md)
+* [GPU的调度：A JS's Prespective](GPU-de-diao-du.md)

@@ -1,0 +1,12 @@
+# 名岂文章著，官应老病休
+
+
+前面几章粗略的介绍了katom的提交和完成，那么katom都会有一个对应的context。一个context一般都是由一个进程打开，这个context就负责作为一个类似中间人的角色在进程和kdev之间提供一个抽象。对于Mali GPU的context，官方的解释是这个对象代表一个实体，在这个实体里，GPU被调度，并获得自己的内存空间。
+
+除了有指向/dev/malixx的文件指针，和一个kdev，context拥有一个structure专门记录MMU table的详细信息。除此之外，context还有一系列和event相关的members。因为是和内存空间相关联，所以有很多和内存相关的lock，list head和红黑树，并且由于这个context一般是进程相关的，所以也会存储pid和tgid。这里需要着重强调mem_pool，在context有两个mem_pool，一个管着4k的内存们，另一个管着2MB的内存们，以及和内存相关的方方面面。另一方面，由于context又跟调度相关，所以会有一个叫jctx的东西，专门用来记录和JD相关的信息。同时，在context里，有很多member是跟just in time分配相关的东西。
+
+context的init没啥好说的，就是带着lock进行一堆atomic的init操作，然后每一步都需要进行checker，失败了就进入error handler。
+
+这一大堆由每个进程创建的一个或多个context是一个叫做context scheduler来schedule的
+
+
