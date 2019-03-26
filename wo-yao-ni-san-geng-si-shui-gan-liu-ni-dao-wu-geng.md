@@ -1,7 +1,3 @@
----
-description: kbase_backend_soft_hard_stop_slot
----
-
 # 我要你三更死，谁敢留你到五更
 
 当所有人都以为你要唠闲白的的时候，不唠也是一种闲白。

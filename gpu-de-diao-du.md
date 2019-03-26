@@ -1,0 +1,24 @@
+# GPU的调度：A JS's Prespective
+
+这一期我居然写不出闲白了。。。为什么不把闲白鸽了。但我猜这样我所有的读者都会不乐意，下次我就应该弄个quiz，必须看完正文儿然后答对了题才能看闲白，然后不想答题的就要充会员（这么熟悉的套路）。。。但我估计这样我的书就彻底没人看了。
+
+这本书涉猎的范围现在只是吃喝，还没有玩乐（当然还有GPU驱动的相关知识），所以我准备适时的增加玩乐的内容。当然这也有一些困难，首先我这个人就好吃喝，对于玩乐热情没有那么高，所以也就很难写出点东西来。不是王婆卖瓜，如果文章里能写出一份儿东西，那么肚子里得有十份儿东西。再者就是，会有人批评啦，作为青年人，应该艰苦奋斗，不应该整天吃吃喝喝，玩玩乐乐。我本人也是承认这一点的，但是人活一世，草木一秋，艰苦奋斗固然重要，但是在作出自己的贡献之余，哪怕这个贡献只有一点点，那么适当的花些时间和精力在这些方面也是能被允许的。
+
+但是我自己的业余活动都是老年人活动，爬爬山，洗洗澡，喝喝酒，实在是写不出个所以然来，不过既然说好了要多样性，那么我在之后的篇章里会介绍一些例如诗词歌赋，电子竞技相关的内容，尽情期待。。。
+
+kbase\_js\_sched\_all是用来从所有available的context里尽可能的提交atom到所有的job slots里。当然这种带\_all的都是调用相应的不带\_all的函数，只不过是传一个bit全设成1的bit map进去或者是多次调用，kbase\_js\_sched\_all也不例外，是调用kbase\_js\_sched。在这个函数里，我们会从高优先级到低优先级遍历bit map，我们先找出最高位的设置为1的位，并从相应的job slot里pop出context来。如果没有可以pop的东西，那么就把bit map相应的位置设置成0并且进入下一个。
+
+如果这个context不是活跃的，那么就把context\_idle设置成真。并且如果电源管理被挂起，那么我们就把context重新放到队列里并且停止调度，也就是说我们不会去检查剩下的slot而是直接return。相反，如果电源管理没有被挂起，那么我们就把这个context设置成活跃。
+
+接着，我们会利用kbase\_js\_use\_ctx来进行一个判断。这个kbase\_js\_use\_ctx函数首先会看这个context是不是有SCHEDULED这个flag并且已经被分配了ASID，如果都是，那么我们就会把active\_kctx的相应的job slot设置成这个context并返回一个真。如果不是，那么我们就会执行kbasep\_js\_schedule\_ctx，并把结果返回，这个函数我们会细讲。
+
+如果上述判断为假，那么就说明现在这个context不可用，我们就会把这个context加回到每个slot的可pull队列然后把bit map相应的位置设置成0并且进入下一个。
+
+如果上述判断为真，那么就会执行kbase\_jm\_kick，并且把现在的job slot当作参数穿进去，正如我们之前介绍的，jm\_kick会调度active\_kctx。
+
+接着，我们检查当前的context有没有PULLED这个FLAG，如果没有的话了，那么我们就看可不可以pull，也就是pullable为不为真。如果为真，并且上一个active的context就是现在这个context，并且这个context从第0个job slot中pull过atom，那么我们就把这个context加到pullable的尾巴上。如果只是pullable但是其他的条件不满足，那么我们就加到pullable的头上，如果连pullable都不满足，那么我们就加到unpullable的尾巴上。 如果这个job slot上有last\_active，并且当前的active的context不是那个last\_active，但是当前的context却是pullable的，那么我们就需要移除掉active marker来阻止这个context在IRQ上提交atom。接下来，如果context\_idle是真，那么我们就需要标记这个context为空闲，然后break到下一个job slots。
+
+如果有PULLED这个FLAG，我们还是检查pullable，如果pullable就加到pullable的尾巴上，如果unpullable就加到unpullable的尾巴上。
+
+在循环完这个bit map之后，kbase\_js\_sched会根据需要看需要需要同步计时器。最后我们循环所有的job slot（不管在bit map里设置没有都要循环），如果当前active的context和上一个相等，然而ctx\_wait却为真，那么我们就把这个active设成NULL。
+

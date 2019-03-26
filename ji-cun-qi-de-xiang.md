@@ -12,7 +12,7 @@
 
 对于JOB\_IRQ\_CLEAR，这应该是个write-only的寄存器，如果给CLEAR的某个bit写上1，那么对应的RAWSTAT就会把相应的bit变成0。但我猜测JOB\_IRQ\_STATUS也会相应的变化。
 
-这里最坑爹的就是JOB\_IRQ\_JS\_STATE，这个寄存器一共有32位，分为上半部分和下半部分，上半部分对应着_next的相应slot有没有active的job，而下半部分对应着current的相应地slot有没有active的job。也就是说，如果当前中断是因为某个job完成而产生的，那么这个job的slot相应的JOB\_IRQ\_JS\_STATE的低位应该是0，除非_next上的job已经被push到了current上。即使是这样，那么高位上相应的job slot active状态也应该是0，这一点在之后对于判断竞争状态至关重要。
+这里最坑爹的就是JOB\_IRQ\_JS\_STATE，这个寄存器一共有32位，分为上半部分和下半部分，上半部分对应着\_next的相应slot有没有active的job，而下半部分对应着current的相应地slot有没有active的job。也就是说，如果当前中断是因为某个job完成而产生的，那么这个job的slot相应的JOB\_IRQ\_JS\_STATE的低位应该是0，除非\_next上的job已经被push到了current上。即使是这样，那么高位上相应的job slot active状态也应该是0，这一点在之后对于判断竞争状态至关重要。
 
 最后一个寄存器就没什么鸟用了，它代表了我们要delay多少个cycle去传达一个中断，并且JOB\_IRQ\_STATUS不会被它影响，只有中断的传递会被影响。
 

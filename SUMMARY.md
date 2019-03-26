@@ -9,6 +9,13 @@
 * [我要你三更死，谁敢留你到五更](wo-yao-ni-san-geng-si-shui-gan-liu-ni-dao-wu-geng.md)
 * [一杯敬明天，一杯敬过往](yi-bei-jing-ming-tian-yi-bei-jing-guo-wang.md)
 * [寄存器的遐想](ji-cun-qi-de-xiang.md)
-* [从GPU的角度看job的完成](cong-GPU-de-jiao-du-kan-job-wan-cheng.md)
-* [job完成的全过程：从JM到JS到JD](cong-JM-dao-JS-dao-JD.md)
-* [GPU的调度：A JS's Prespective](GPU-de-diao-du.md)
+* [从GPU的角度看job的完成](cong-gpu-de-jiao-du-kan-job-wan-cheng.md)
+* [job完成的全过程：从JM到JS到JD](cong-jm-dao-js-dao-jd.md)
+* [GPU的调度：A JS's Prespective](gpu-de-diao-du.md)
+
+## 番外
+
+* [为什么会有番外](fan-wai/wei-shen-me-hui-you-fan-wai.md)
+* [代码大全第二版（Steve McConnel）](fan-wai/dai-ma-da-quan-di-er-ban-steve-mcconnel.md)
+* [Effective C++（第三版）](fan-wai/effective-c++-di-san-ban.md)
+
