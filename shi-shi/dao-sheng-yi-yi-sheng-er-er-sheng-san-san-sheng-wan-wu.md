@@ -68,6 +68,11 @@ TILER_PRESENT_HI = 0x00000000; //(RO)
 
 L2_PRESENT_LO = 0x00000001; //(RO)
 L2_PRESENT_HI = 0x00000000; //(RO)
+
+STACK_PRESENT_LO = 0x0000000f; //(RO)
+STACK_PRESENT_HI = 0x00000000; //(RO)
+
+COHERENCY_FEATURES = 0x00000002; //(RO) 
 ```
 
 当然大家都能看出来每一行后面的（RO）代表的是READ ONLY，但是这个READ ONLY是指这个寄存器不能被CPU写，而不是这个值不会改变，GPU本身还是能改变这些寄存器的值。所以这些值是给驱动开发者看的，我一个写simulator的，是要去更改某些只读寄存器的，毕竟我在假装自己是一个~~蘑菇~~GPU。。。其实我根本也没有啥寄存器，弄一个长一点的数组，起个名字叫寄存器，谁不信就打谁。

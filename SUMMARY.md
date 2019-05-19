@@ -16,6 +16,7 @@
 ## 实事
 
 * [道生一，一生二，二生三，三生万物](shi-shi/dao-sheng-yi-yi-sheng-er-er-sheng-san-san-sheng-wan-wu.md)
+* [你难过的太假装， 你凭什么念念不忘？](shi-shi/ni-nan-guo-de-tai-jia-zhuang-ni-ping-shen-me-nian-nian-bu-wang.md)
 
 ## 番外
 
