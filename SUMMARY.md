@@ -24,3 +24,7 @@
 * [代码大全第二版（Steve McConnel）](fan-wai/dai-ma-da-quan-di-er-ban-steve-mcconnel.md)
 * [Effective C++（第三版）](fan-wai/effective-c++-di-san-ban.md)
 
+## 番外的番外
+
+* [单一图像卷积：一个mobile GPU的算法](fan-wai-de-fan-wai/dan-yi-tu-xiang-juan-ji-yi-ge-mobile-gpu-de-suan-fa.md)
+
