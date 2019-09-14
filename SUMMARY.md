@@ -24,6 +24,7 @@
 * [你给我翻译翻译什么叫GPU上的单一图像卷积](fan-wai-de-fan-wai/dan-yi-tu-xiang-juan-ji-yi-ge-mobile-gpu-de-suan-fa.md)
 * [现有的方法哪里不带劲了，用得着你弄个新的？](fan-wai-de-fan-wai/xian-you-de-fang-fa-na-li-bu-dai-jin-le-yong-de-zhe-ni-nong-ge-xin-de.md)
 * [我们干了个啥：映射thread到输出图像的channel上](fan-wai-de-fan-wai/wo-men-gan-le-ge-sha-ying-she-thread-dao-shu-chu-tu-xiang-de-channel-shang.md)
+* [说了半天，结果怎样？](fan-wai-de-fan-wai/shuo-le-ban-tian-jie-guo-zen-yang.md)
 
 ## 番外
 
